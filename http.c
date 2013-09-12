@@ -1,11 +1,27 @@
 #include "request.h"
 #include <netinet/in.h>
+#include <sys/wait.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 
+static void sig_chld(int signo);
+static void sig_chld(int signo) 
+{ 
+    pid_t   pid; 
+    int     stat; 
+			    
+    while((pid = waitpid(-1, &stat, WNOHANG)) > 0)
+    {   
+        printf("child %d terminated\n", pid); 
+    }   
+				    
+    return; 
+} 
 int main(int argc, char **argv)
 {
+	signal(SIGCHLD, sig_chld);
 	int listenfd, connfd, port;
 	socklen_t  clientlen;
 	struct sockaddr_in clientaddr;
