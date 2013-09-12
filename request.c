@@ -88,7 +88,7 @@ void handle_request(request_t *q)
 
 	if(need_cgi)
 	{
-		if(has_the_right(filename, &mode, RUN))
+		if(!has_the_right(filename, &mode, RUN))
 		{
 			run_cgi(q, filename, cgi_args);
 			strcpy(q->cgi_args, cgi_args);
@@ -96,7 +96,7 @@ void handle_request(request_t *q)
 	}
 	else
 	{
-		if(has_the_right(filename, &mode, READ))
+		if(!has_the_right(filename, &mode, READ))
 			put_static_info(q, filename, mode.st_size);
 	}
 }
@@ -119,18 +119,18 @@ int parse_uri(char *uri, char *filename, char *cgi_args)
 {
 	char *ptr;
 
-	if(!strstr(uri, "cgi-bin"))
+	if(!strstr(uri, "cgi-bin")) //not a cgi program
 	{
 		strcpy(cgi_args, "");
-		strcpy(filename, ".");
+		strcpy(filename, "./text");
 		strcat(filename, uri);
-		if(uri[strlen(uri)-1] == '/')
+		if(strlen(uri)==1&&uri[strlen(uri)-1] == '/') //request uri is "/"
 			strcat(filename, "index.html");//default ref to "/index.html"
 		return 0;
 	}
-	else
+	else //is a cgi program
 	{
-		ptr = strchr(uri, '?');
+		ptr = strchr(uri, '?');//get params
 		if(ptr)
 		{
 			strcpy(cgi_args, ptr+1);

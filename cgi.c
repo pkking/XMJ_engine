@@ -64,5 +64,6 @@ void run_cgi(request_t *q, char *filename, char *cgi_args)
 		dup2(q->io->io_fd, STDOUT_FILENO);
 		execve(filename, emptylist, environ);
 	}
-	wait(NULL);
+	else
+		wait(NULL);
 }
